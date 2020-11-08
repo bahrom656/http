@@ -107,11 +107,11 @@ func(s *Server) handle(conn net.Conn) (err error) {
 		return
 	}
 
-	method, path, version := parts[0], parts[1], parts[2]
-	if method != "GET"{
-		log.Print("error get")
-		return
-	}
+	_, path, version := parts[0], parts[1], parts[2]
+	// if method != "GET"{
+	// 	log.Print("error get")
+	// 	return
+	// }
 
 	if version != "HTTP/1.1"{
 		log.Print(err)
