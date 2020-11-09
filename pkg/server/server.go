@@ -17,22 +17,27 @@ type RequestFunc func(req *Request)
 type Request struct {
 	Conn        net.Conn
 	QueryParams url.Values
+	PathParams  map[string]string
 }
 
 type Server struct {
 	addr     string
 	mu       sync.RWMutex
-	handlers map[string]RequestFunc
+	handlers map[string]HandlerFunc
+	requests map[string]RequestFunc
 }
 
 func NewServer(addr string) *Server {
-	return &Server{addr: addr, handlers: make(map[string]RequestFunc)}
+	return &Server{
+		addr: addr,
+		handlers: make(map[string]HandlerFunc),
+		requests: make(map[string]RequestFunc)}
 }
 func (s *Server) Register(path string, request RequestFunc) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.handlers[path] = request
+	s.requests[path] = request
 }
 func (s *Server) Start() (err error) {
 	listener, err := net.Listen("tcp", s.addr)
@@ -114,11 +119,14 @@ func (s *Server) handle(conn net.Conn) (err error) {
 		log.Print(err)
 		return
 	}
-	for pat, handler := range s.handlers {
+	for pat, handler := range s.requests {
 		if uri.Path == pat {
 			handler(&Request{
 				Conn:        conn,
 				QueryParams: uri.Query(),
+				PathParams: map[string]string{
+					pat: pathWithQuery,
+				},
 			})
 		}
 	}
