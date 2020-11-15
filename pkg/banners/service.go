@@ -41,11 +41,24 @@ func (s *Service) ByID(ctx context.Context, id int64) (*Banner, error) {
 	return nil, errors.New("items not found")
 }
 func (s *Service) Save(ctx context.Context, item *Banner) (*Banner, error) {
+	var bannersID int64
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	s.items = append(s.items, item)
-	return item, nil
+	if item.ID == 0 {
+		bannersID++
+		item.ID = bannersID
+		s.items = append(s.items, item)
+		return item, nil
+	}
+
+	for index, value := range s.items{
+		if value.ID == item.ID{
+			s.items[index] = item
+			return item, nil
+		}
+	}
+	return nil, errors.New("items not found")
 }
 func (s *Service) RemoveByID(ctx context.Context, id int64) (*Banner, error) {
 	s.mu.RLock()
