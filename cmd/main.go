@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/bahrom656/http/pkg/server"
-	"log"
+	"github.com/bahrom656/http/cmd/app"
+	"github.com/bahrom656/http/pkg/banners"
 	"net"
+	"net/http"
 	"os"
 )
 //
@@ -11,23 +12,22 @@ import (
 
 func main() {
 	host := "0.0.0.0"
-	port := "443"
+	port := "9999"
 
 	if err := execute(host, port); err != nil {
 		os.Exit(1)
 	}
-
 }
-func execute(host, port string) (err error) {
-	srv := server.NewServer(net.JoinHostPort(host, port))
-	srv.Register("/payments/{id}", func(req *server.Request) {
-		
-		v := "1"
-		req.PathParams["id"] = v
-		id := req.PathParams["id"]
-		log.Print(id)
 
+func execute(host string, port string) (err error) {
+	mux := http.NewServeMux()
+	bannersSvc := banners.NewService()
+	server := app.NewServer(mux, bannersSvc)
 
-	})
-	return srv.Start()
+	server.Init()
+	srv := &http.Server{
+		Addr: net.JoinHostPort(host, port),
+		Handler: server,
+	}
+	return srv.ListenAndServe()
 }
