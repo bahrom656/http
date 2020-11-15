@@ -123,6 +123,7 @@ func (s *Server) handleGetPostRemoveByID(writer http.ResponseWriter, request *ht
 		http.Error(writer, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
+
 	item, err := s.bannersSvc.ByID(request.Context(), id)
 	if err != nil {
 		log.Print(err)
