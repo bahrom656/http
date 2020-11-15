@@ -22,13 +22,13 @@ func (s *Server) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 }
 
 func (s *Server) Init() {
-	s.mux.HandleFunc("/banners.getAll", s.handleGetPostAll)
-	s.mux.HandleFunc("/banners.getByID", s.handleGetPostByID)
-	s.mux.HandleFunc("/banners.Save", s.handleGetPostSave)
-	s.mux.HandleFunc("/banners.RemoveByID", s.handleGetPostRemoveByID)
+	s.mux.HandleFunc("/banners.getAll", s.handleGetAllBanners)
+	s.mux.HandleFunc("/banners.getByID", s.handleGetBannerByID)
+	s.mux.HandleFunc("/banners.Save", s.handleGetSaveBanner)
+	s.mux.HandleFunc("/banners.RemoveByID", s.handleGetRemoveByID)
 }
 
-func (s *Server) handleGetPostAll(writer http.ResponseWriter, request *http.Request) {
+func (s *Server) handleGetAllBanners(writer http.ResponseWriter, request *http.Request) {
 	banners, err := s.bannersSvc.GetAll(request.Context())
 	if err != nil {
 		log.Print(err)
@@ -49,7 +49,7 @@ func (s *Server) handleGetPostAll(writer http.ResponseWriter, request *http.Requ
 		log.Print(err)
 	}
 }
-func (s *Server) handleGetPostByID(writer http.ResponseWriter, request *http.Request) {
+func (s *Server) handleGetBannerByID(writer http.ResponseWriter, request *http.Request) {
 	idParam := request.URL.Query().Get("id")
 
 	id, err := strconv.ParseInt(idParam, 10, 64)
@@ -79,7 +79,7 @@ func (s *Server) handleGetPostByID(writer http.ResponseWriter, request *http.Req
 		log.Print(err)
 	}
 }
-func (s *Server) handleGetPostSave(writer http.ResponseWriter, request *http.Request) {
+func (s *Server) handleGetSaveBanner(writer http.ResponseWriter, request *http.Request) {
 	idParam := request.URL.Query().Get("id")
 	title := request.URL.Query().Get("title")
 	content := request.URL.Query().Get("content")
@@ -114,7 +114,7 @@ func (s *Server) handleGetPostSave(writer http.ResponseWriter, request *http.Req
 		log.Print(err)
 	}
 }
-func (s *Server) handleGetPostRemoveByID(writer http.ResponseWriter, request *http.Request) {
+func (s *Server) handleGetRemoveByID(writer http.ResponseWriter, request *http.Request) {
 	idParam := request.URL.Query().Get("id")
 
 	id, err := strconv.ParseInt(idParam, 10, 64)
