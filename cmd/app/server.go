@@ -92,7 +92,10 @@ func (s *Server) handleGetSaveBanner(writer http.ResponseWriter, request *http.R
 		http.Error(writer, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
-
+	if title == "" && content == "" && button == "" && link == "" {
+		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
 	item := &banners.Banner{
 		ID:      id,
 		Title:   title,
