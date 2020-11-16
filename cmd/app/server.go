@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type Server struct {
@@ -104,7 +105,13 @@ func (s *Server) handleGetSaveBanner(writer http.ResponseWriter, request *http.R
 		Link:    link,
 	}
 
-	banner, err := s.bannersSvc.Save(request.Context(), item)
+	file, header, err := request.FormFile("image")
+	if err == nil {
+		var name = strings.Split(header.Filename, ".")
+		item.Image = name[len(name)-1]
+	}
+
+	banner, err := s.bannersSvc.Save(request.Context(), item, file)
 	if err != nil {
 		log.Print(err)
 		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
