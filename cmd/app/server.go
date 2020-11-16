@@ -101,7 +101,14 @@ func (s *Server) handleGetSaveBanner(writer http.ResponseWriter, request *http.R
 		Link:    link,
 	}
 
-	data, err := json.Marshal(item)
+	banner, err := s.bannersSvc.Save(request.Context(), item)
+	if err != nil {
+		log.Print(err)
+		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	data, err := json.Marshal(banner)
 	if err != nil {
 		log.Print(err)
 		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
