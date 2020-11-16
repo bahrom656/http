@@ -25,8 +25,8 @@ func (s *Server) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 func (s *Server) Init() {
 	s.mux.HandleFunc("/banners.getAll", s.handleGetAllBanners)
 	s.mux.HandleFunc("/banners.getByID", s.handleGetBannerByID)
-	s.mux.HandleFunc("/banners.Save", s.handleGetSaveBanner)
-	s.mux.HandleFunc("/banners.RemoveByID", s.handleGetRemoveByID)
+	s.mux.HandleFunc("/banners.save", s.handleGetSaveBanner)
+	s.mux.HandleFunc("/banners.removeByID", s.handleGetRemoveByID)
 }
 
 func (s *Server) handleGetAllBanners(writer http.ResponseWriter, request *http.Request) {

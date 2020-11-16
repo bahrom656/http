@@ -44,7 +44,7 @@ func (s *Service) ByID(ctx context.Context, id int64) (*Banner, error) {
 
 	return nil, errors.New("items not found")
 }
-var BannersID int64
+var BannersID int64 = 0
 
 func (s *Service) Save(ctx context.Context, item *Banner, file multipart.File) (*Banner, error) {
 	s.mu.RLock()
