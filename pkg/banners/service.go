@@ -47,6 +47,9 @@ func (s *Service) ByID(ctx context.Context, id int64) (*Banner, error) {
 var BannersID int64
 
 func (s *Service) Save(ctx context.Context, item *Banner, file multipart.File) (*Banner, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
 	if item.ID == 0 {
 		BannersID++
 		item.ID = BannersID
