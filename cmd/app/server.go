@@ -131,7 +131,7 @@ func (s *Server) handleGetRemoveByID(writer http.ResponseWriter, request *http.R
 		return
 	}
 
-	item, err := s.bannersSvc.ByID(request.Context(), id)
+	item, err := s.bannersSvc.RemoveByID(request.Context(), id)
 	if err != nil {
 		log.Print(err)
 		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
