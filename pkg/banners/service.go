@@ -44,15 +44,15 @@ func (s *Service) ByID(ctx context.Context, id int64) (*Banner, error) {
 
 	return nil, errors.New("items not found")
 }
-var BannersID int64 = 0
+var ID int64 = 0
 
 func (s *Service) Save(ctx context.Context, item *Banner, file multipart.File) (*Banner, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
 	if item.ID == 0 {
-		BannersID++
-		item.ID = BannersID
+		ID++
+		item.ID = ID
 
 		if item.Image != "" {
 			item.Image = fmt.Sprint(item.ID) + "." + item.Image
@@ -83,14 +83,13 @@ func (s *Service) Save(ctx context.Context, item *Banner, file multipart.File) (
 				if err != nil {
 					return nil, err
 				}
-			} else {
-				item.Image = s.items[index].Image
 			}
+			item.Image = s.items[index].Image
 			s.items[index] = item
 			return item, nil
 		}
 	}
-	return nil, errors.New("item not found")
+	return nil, errors.New("item nt found")
 }
 func (s *Service) RemoveByID(ctx context.Context, id int64) (*Banner, error) {
 	s.mu.RLock()
