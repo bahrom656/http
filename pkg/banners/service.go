@@ -24,9 +24,10 @@ type Banner struct {
 	Content string
 	Button  string
 	Link    string
-	Image 	string
+	Image   string
 }
 
+var BannerID int64 = 0
 func (s *Service) All(ctx context.Context) ([]*Banner, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -42,18 +43,16 @@ func (s *Service) ByID(ctx context.Context, id int64) (*Banner, error) {
 		}
 	}
 
-	return nil, errors.New("items not found")
+	return nil, errors.New("item not found")
 }
-var ID int64 = 0
 
 func (s *Service) Save(ctx context.Context, item *Banner, file multipart.File) (*Banner, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
 	if item.ID == 0 {
-		ID++
-		item.ID = ID
-
+		BannerID++
+		item.ID = BannerID
 		if item.Image != "" {
 			item.Image = fmt.Sprint(item.ID) + "." + item.Image
 			err := uFile(file, "./web/banners/"+item.Image)
