@@ -3,9 +3,6 @@ package banners
 import (
 	"context"
 	"errors"
-	"fmt"
-	"io/ioutil"
-	"mime/multipart"
 	"sync"
 )
 
@@ -24,10 +21,8 @@ type Banner struct {
 	Content string
 	Button  string
 	Link    string
-	Image   string
 }
 
-var BannerID int64 = 0
 func (s *Service) All(ctx context.Context) ([]*Banner, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -46,34 +41,20 @@ func (s *Service) ByID(ctx context.Context, id int64) (*Banner, error) {
 	return nil, errors.New("item not found")
 }
 
-func (s *Service) Save(ctx context.Context, item *Banner, file multipart.File) (*Banner, error) {
+var BannerID int64 = 0
+
+func (s *Service) Save(ctx context.Context, item *Banner) (*Banner, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
 	if item.ID == 0 {
 		BannerID++
 		item.ID = BannerID
-		if item.Image != "" {
-			item.Image = fmt.Sprint(item.ID) + "." + item.Image
-			err := uFile(file, "./web/banners/"+item.Image)
-			if err != nil {
-				return nil, err
-			}
-		}
 		s.items = append(s.items, item)
 		return item, nil
 	}
 	for index, value := range s.items {
 		if value.ID == item.ID {
-			if item.Image != "" {
-				item.Image = fmt.Sprint(item.ID) + "." + item.Image
-				err := uFile(file, "./web/banners/"+item.Image)
-				if err != nil {
-					return nil, err
-				}
-			} else {
-				item.Image = s.items[index].Image
-			}
 			s.items[index] = item
 			return item, nil
 		}
@@ -91,18 +72,4 @@ func (s *Service) RemoveByID(ctx context.Context, id int64) (*Banner, error) {
 		}
 	}
 	return nil, errors.New("item not found")
-}
-
-func uFile(file multipart.File, path string) error {
-	var data, err = ioutil.ReadAll(file)
-	if err != nil {
-		return errors.New("not readble data")
-	}
-
-	err = ioutil.WriteFile(path, data, 0666)
-	if err != nil {
-		return errors.New("not saved from folder ")
-	}
-
-	return nil
 }
