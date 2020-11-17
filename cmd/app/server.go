@@ -24,9 +24,9 @@ func (s *Server) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 
 func (s *Server) Init() {
 	s.mux.HandleFunc("/banners.getAll", s.handleGetAllBanners)
-	s.mux.HandleFunc("/banners.getByID", s.handleGetBannerByID)
-	s.mux.HandleFunc("/banners.save", s.handleGetSaveBanner)
-	s.mux.HandleFunc("/banners.removeByID", s.handleGetRemoveByID)
+	s.mux.HandleFunc("/banners.getById", s.handleGetBannerByID)
+	s.mux.HandleFunc("/banners.save", s.handleSaveBanner)
+	s.mux.HandleFunc("/banners.removeById", s.handleRemoveById)
 }
 
 func (s *Server) handleGetAllBanners(writer http.ResponseWriter, request *http.Request) {
@@ -59,7 +59,7 @@ func (s *Server) handleGetBannerByID(writer http.ResponseWriter, request *http.R
 		http.Error(writer, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
-
+	log.Print(id)
 	item, err := s.bannersSvc.ByID(request.Context(), id)
 	if err != nil {
 		log.Print(err)
@@ -80,7 +80,7 @@ func (s *Server) handleGetBannerByID(writer http.ResponseWriter, request *http.R
 		log.Print(err)
 	}
 }
-func (s *Server) handleGetSaveBanner(writer http.ResponseWriter, request *http.Request) {
+func (s *Server) handleSaveBanner(writer http.ResponseWriter, request *http.Request) {
 	idParam := request.PostFormValue("id")
 	title := request.PostFormValue("title")
 	content := request.PostFormValue("content")
@@ -131,7 +131,8 @@ func (s *Server) handleGetSaveBanner(writer http.ResponseWriter, request *http.R
 		log.Print(err)
 	}
 }
-func (s *Server) handleGetRemoveByID(writer http.ResponseWriter, request *http.Request) {
+
+func (s *Server) handleRemoveById(writer http.ResponseWriter, request *http.Request) {
 	idParam := request.URL.Query().Get("id")
 
 	id, err := strconv.ParseInt(idParam, 10, 64)
