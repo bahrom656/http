@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type Server struct {
@@ -58,6 +59,7 @@ func (s *Server) handleGetBannerByID(writer http.ResponseWriter, request *http.R
 		http.Error(writer, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
+	log.Print(id)
 	item, err := s.bannersSvc.ByID(request.Context(), id)
 	if err != nil {
 		log.Print(err)
@@ -79,11 +81,11 @@ func (s *Server) handleGetBannerByID(writer http.ResponseWriter, request *http.R
 	}
 }
 func (s *Server) handleSaveBanner(writer http.ResponseWriter, request *http.Request) {
-	idParam := request.URL.Query().Get("id")
-	title := request.URL.Query().Get("title")
-	content := request.URL.Query().Get("content")
-	button := request.URL.Query().Get("button")
-	link := request.URL.Query().Get("link")
+	idParam := request.PostFormValue("id")
+	title := request.PostFormValue("title")
+	content := request.PostFormValue("content")
+	button := request.PostFormValue("button")
+	link := request.PostFormValue("link")
 
 	id, err := strconv.ParseInt(idParam, 10, 64)
 	if err != nil {
@@ -104,7 +106,13 @@ func (s *Server) handleSaveBanner(writer http.ResponseWriter, request *http.Requ
 		Link:    link,
 	}
 
-	banner, err := s.bannersSvc.Save(request.Context(), item)
+	file, header, err := request.FormFile("image")
+	if err == nil {
+		var name = strings.Split(header.Filename, ".")
+		item.Image = name[len(name)-1]
+	}
+
+	banner, err := s.bannersSvc.Save(request.Context(), item, file)
 	if err != nil {
 		log.Print(err)
 		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
