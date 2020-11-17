@@ -90,10 +90,11 @@ func (s *Server) handleSaveBanner(writer http.ResponseWriter, request *http.Requ
 	id, err := strconv.ParseInt(idParam, 10, 64)
 	if err != nil {
 		log.Print(err)
-		http.Error(writer, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 	if title == "" && content == "" && button == "" && link == "" {
+		log.Print(err)
 		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -142,14 +143,14 @@ func (s *Server) handleRemoveById(writer http.ResponseWriter, request *http.Requ
 		return
 	}
 
-	item, err := s.bannersSvc.RemoveByID(request.Context(), id)
+	banner, err := s.bannersSvc.RemoveByID(request.Context(), id)
 	if err != nil {
 		log.Print(err)
 		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	data, err := json.Marshal(item)
+	data, err := json.Marshal(banner)
 	if err != nil {
 		log.Print(err)
 		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
