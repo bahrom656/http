@@ -30,7 +30,7 @@ func (s *Server) Init() {
 }
 
 func (s *Server) handleGetAllBanners(writer http.ResponseWriter, request *http.Request) {
-	banners, err := s.bannersSvc.GetAll(request.Context())
+	banners, err := s.bannersSvc.All(request.Context())
 	if err != nil {
 		log.Print(err)
 		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -139,7 +139,7 @@ func (s *Server) handleRemoveById(writer http.ResponseWriter, request *http.Requ
 	id, err := strconv.ParseInt(idParam, 10, 64)
 	if err != nil {
 		log.Print(err)
-		http.Error(writer, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 

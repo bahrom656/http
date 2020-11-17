@@ -27,7 +27,7 @@ type Banner struct {
 	Image 	string
 }
 
-func (s *Service) GetAll(ctx context.Context) ([]*Banner, error) {
+func (s *Service) All(ctx context.Context) ([]*Banner, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	return s.items, nil
